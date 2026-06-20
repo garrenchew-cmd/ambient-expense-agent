@@ -78,6 +78,7 @@ jobs:
             --update-env-vars="COMMIT_SHA=${{ github.sha }},LOGS_BUCKET_NAME=${{ vars.LOGS_BUCKET_NAME_PROD }}"
 
       - name: Register with Gemini Enterprise
+        if: ${{ vars.GEMINI_ENTERPRISE_APP_ID_PROD != '' }}
         run: |
           uvx google-agents-cli publish gemini-enterprise \
             --gemini-enterprise-app-id ${{ vars.GEMINI_ENTERPRISE_APP_ID_PROD }}
