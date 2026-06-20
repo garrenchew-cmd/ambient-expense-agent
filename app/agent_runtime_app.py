@@ -47,6 +47,40 @@ class AgentEngineApp(AdkApp):
         """Returns the project ID."""
         return os.environ.get("GOOGLE_CLOUD_PROJECT") or "mock-project-id"
 
+    def query(
+        self,
+        *,
+        message: Any,
+        user_id: str,
+        session_id: Optional[str] = None,
+        run_config: Optional[dict[str, Any]] = None,
+        **kwargs,
+    ) -> dict[str, Any]:
+        """Queries the ADK application synchronously."""
+        events = list(
+            self.stream_query(
+                message=message,
+                user_id=user_id,
+                session_id=session_id,
+                run_config=run_config,
+                **kwargs,
+            )
+        )
+        final_output = {}
+        msg_text = ""
+        for ev in events:
+            if ev.get("output"):
+                final_output = ev["output"]
+            if ev.get("content") and ev["content"].get("parts"):
+                for part in ev["content"]["parts"]:
+                    if part.get("text"):
+                        msg_text = part["text"]
+                        
+        return {
+            "response": final_output,
+            "message": msg_text,
+        }
+
     def _tracing_enabled(self) -> bool:
         """Disable tracing if default credentials are not present to avoid crashes."""
         import google.auth
