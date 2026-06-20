@@ -97,6 +97,8 @@ class AgentEngineApp(AdkApp):
         super().set_up()
         logging.basicConfig(level=logging.INFO)
         try:
+            if os.environ.get("INTEGRATION_TEST") == "TRUE":
+                raise ValueError("Skip cloud logging in integration tests")
             logging_client = google_cloud_logging.Client()
             self.logger = logging_client.logger(__name__)
         except Exception:
@@ -116,7 +118,7 @@ class AgentEngineApp(AdkApp):
     def register_operations(self) -> dict[str, list[str]]:
         """Registers the operations of the Agent."""
         operations = super().register_operations()
-        operations[""] = [*operations.get("", []), "register_feedback"]
+        operations[""] = [*operations.get("", []), "register_feedback", "query"]
         return operations
 
     def clone(self) -> "AgentEngineApp":
