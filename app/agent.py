@@ -51,12 +51,21 @@ def classify_expense(ctx: Context, node_input: types.Content | dict | ExpenseCla
         claim = ExpenseClaim(**ctx.state["claim"])
     else:
         if isinstance(node_input, dict):
-            claim = ExpenseClaim(**node_input)
+            data = dict(node_input)
+            if "submitter" in data and "employee_id" not in data:
+                data["employee_id"] = data["submitter"]
+            if "description" in data and "item" not in data:
+                data["item"] = data["description"]
+            claim = ExpenseClaim(**data)
         elif isinstance(node_input, ExpenseClaim):
             claim = node_input
         else:
             text = node_input.parts[0].text.strip()
             data = json.loads(text)
+            if "submitter" in data and "employee_id" not in data:
+                data["employee_id"] = data["submitter"]
+            if "description" in data and "item" not in data:
+                data["item"] = data["description"]
             claim = ExpenseClaim(**data)
 
     route = "auto" if claim.amount < 100.0 else "review"
