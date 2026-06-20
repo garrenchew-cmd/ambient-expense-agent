@@ -51,7 +51,7 @@ class AgentEngineApp(AdkApp):
         self,
         *,
         message: Any,
-        user_id: str,
+        user_id: str = "default-user",
         session_id: Optional[str] = None,
         run_config: Optional[dict[str, Any]] = None,
         **kwargs,
