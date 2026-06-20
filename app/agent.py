@@ -32,7 +32,9 @@ try:
 except Exception:
     os.environ["GOOGLE_CLOUD_PROJECT"] = "mock-project-id"
 
-os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
+if "GOOGLE_CLOUD_LOCATION" not in os.environ or os.environ["GOOGLE_CLOUD_LOCATION"] == "global":
+    if not os.environ.get("VERTEX_AI_REASONING_ENGINE_ID"):
+        os.environ["GOOGLE_CLOUD_LOCATION"] = "global"
 os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "True"
 
 
